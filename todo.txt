@@ -1,0 +1,6 @@
+1. Auto layout (skills and head to head)
+2. Intake
+3. Outtake
+4. Conveyor
+5. Pneumatics
+6. Color detection (maybe)
