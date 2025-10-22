@@ -377,8 +377,6 @@ void measure_offsets() {
 // Make your own autonomous functions here!
 // . . .
 
-// red team
-
 // bottom bot
 void skills1() {
   chassis.odom_xyt_set(-55_in, -14_in, 150_deg);
@@ -507,6 +505,28 @@ void skills2() {
   // finish
 }
 
-void head_two_head() {
+// red
+void red_skills_1() {
+  skills1();
+}
 
+void red_skills_2() {
+  skills2();
+}
+
+// blue
+void blue_skills_1() {
+  chassis.odom_x_flip();
+  chassis.odom_theta_flip();
+  skills1();
+}
+
+void blue_skills_2() {
+  chassis.odom_x_flip();
+  chassis.odom_theta_flip();
+  skills2();
+}
+
+
+void head_two_head() {
 }
