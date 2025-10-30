@@ -7,6 +7,7 @@
 
 // These are out of 127
 const int DRIVE_SPEED = 110;
+const int SLOW_INTAKE = 40;
 const int TURN_SPEED = 90;
 const int SWING_SPEED = 110;
 
@@ -377,86 +378,121 @@ void measure_offsets() {
 // Make your own autonomous functions here!
 // . . .
 
-// bottom bot
-void skills1() {
-  chassis.odom_xyt_set(-55_in, -14_in, 150_deg);
+// Bottom Bot
+void skills_bottom_bot() {
+  // Set starting position bot at (53,14), orientation: 165 degrees
+  chassis.odom_xyt_set(-53_in, -14_in, 165_deg);
 
-  chassis.pid_odom_set({{-30_in, -60_in, 90_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{-30_in, -60_in, 305_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{8_in, -50_in, 305_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  // Intake
+  // Move to point (-39.058, -59.5)
+  chassis.pid_odom_set({{-39.058_in, 59.606_in}, fwd, DRIVE_SPEED});
 
-  chassis.pid_odom_set({{30_in, -60_in, 60_deg}, rev, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{46_in, -47_in, 90_deg}, fwd, DRIVE_SPEED});  // point
-  chassis.pid_wait();
-  chassis.pid_odom_set({{62_in, -47_in, 90_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  // Intake
+  // Turn to point (24.328, -59.5)
+  chassis.pid_turn_set({24.328_in, -59.5_in}, fwd, 90);
 
-  chassis.pid_odom_set({{27_in, -47_in, 270_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{27_in, -47_in, 270_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  // Outtake (High Goal Bottom)
+  // Move to point (24.328, -59.5)
+  chassis.pid_odom_set({{24.328_in, -59.5_in}, fwd, DRIVE_SPEED});
 
-  chassis.pid_odom_set({{46_in, -47_in, 180_deg}, rev, DRIVE_SPEED});  // point
-  chassis.pid_wait();
-  chassis.pid_odom_set({{46_in, -62_in, 180_deg}, fwd, DRIVE_SPEED});  // point
-  chassis.pid_wait();
-  // Intake
+  // Turn to point (7.35, -50.362)
+  chassis.pid_turn_set({7.35_in, -50.362_in}, fwd, 90);
 
-  chassis.pid_turn_set(9_deg, 90);
+  // Move to points (24.328, -59.5), (12.443, -53.003), (7.35, -50.363)
+  // After passing (12.443, -53.003) --> the intake spins
+  // Intakes two blue blocks
+  chassis.pid_odom_set({{{24.328_in, -59.5_in}, fwd, DRIVE_SPEED},
+                        {{12.443_in, -53.003_in}, fwd, DRIVE_SPEED},
+                        {{7.35_in, -50.363_in}, fwd, SLOW_INTAKE}},
+                       true);
+  chassis.pid_wait_until_index(1);
+  // --> Enable intake here
   chassis.pid_wait();
-  chassis.pid_odom_set({{55_in, -13_in, 0_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  // Intake
 
-  chassis.pid_odom_set({{55_in, 13_in, 0_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{48_in, 46_in, 0_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_turn_set(225_deg, 90);
-  chassis.pid_odom_set({{8_in, 8_in, 225_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  // Outtake (Goal Middle Low)
+  // Move to point (32.818, -64.511)
+  chassis.pid_odom_set({{32.818_in, -64.511_in}, rev, DRIVE_SPEED});
 
-  chassis.pid_turn_set(75_deg, 90);
-  chassis.pid_odom_set({{48_in, 46_in, 0_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{48_in, 63_in, 0_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  // Intake
+  // Turn to point (44.891, -47.155)
+  chassis.pid_turn_set({44.891_in, -47.155_in}, fwd, 90);
 
-  chassis.pid_odom_set({{48_in, 46_in, 0_deg}, rev, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_turn_set(90_deg, 90);
-  chassis.pid_odom_set({{63_in, 46_in, 90_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  // Intake
+  // Move to point (44.891, -47.155)
+  chassis.pid_odom_set({{44.891_in, -47.155_in}, fwd, DRIVE_SPEED});
 
-  chassis.pid_odom_set({{58_in, 46_in}, rev, DRIVE_SPEED});
-  chassis.pid_turn_set(270_deg, 90);
-  chassis.pid_odom_set({{28_in, 46_in, 270_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  // Outtake (Score High Goal Top)
+  // Turn to point (60.926, -47)
+  chassis.pid_turn_set({60.926_in, -47_in}, fwd, 90);
 
-  chassis.pid_odom_set({{48_in, 46_in, 270_deg}, rev, DRIVE_SPEED});
+  // Move to point (60.926, -47)
+  chassis.pid_odom_set({{60.926_in, -47_in}, fwd, DRIVE_SPEED});
+
+  // Match Loader / Intake
+
+  // Move to point (44.891, -47.155)
+  chassis.pid_odom_set({{44.891_in, -47.155_in}, rev, DRIVE_SPEED});
+
+  // Turn to point (26.592, -47)
+  chassis.pid_turn_set({26.592_in, -47_in}, fwd, 90);
+
+  // Move to point (26.592, -47)
+  chassis.pid_odom_set({{26.592_in, -47_in}, fwd, DRIVE_SPEED});
+
+  // Score Bottom Long Goal
+  // Outtake
+
+  // Move to point (44.891, -47.155)
+  chassis.pid_odom_set({{47.155_in, -47_in}, rev, DRIVE_SPEED});
+
+  // Turn to point (47.155, -63.756)
+  chassis.pid_turn_set({47.155_in, -63.756_in}, fwd, 90);
+
+  // Move to points (7.155, -47), (47.155, -58.851), (47.155, -63.756)
+  // After passing (47.155, -58.851) --> the intake spins
+  // Intakes two red blocks
+  chassis.pid_odom_set({{{47.155_in, -47_in}, fwd, DRIVE_SPEED},
+                        {{47.155_in, -58.851_in}, fwd, DRIVE_SPEED},
+                        {{47.155_in, -63.756_in}, fwd, SLOW_INTAKE}},
+                       true);
+  chassis.pid_wait_until_index(1);
+  // Intake on
   chassis.pid_wait();
-  chassis.pid_odom_set({{0_in, 23_in, 245_deg}, fwd, DRIVE_SPEED});
+  // Intake off
+
+  // Move to point (44.891, -47.344)
+  chassis.pid_odom_set({{47.155_in, -47.344_in}, rev, DRIVE_SPEED});
+
+  // Turn to point (55.267, -31.308)
+  chassis.pid_turn_set({55.267_in, -31.308_in}, fwd, 90);
+
+  // Move to point (55.267, -31.308)
+  chassis.pid_odom_set({{55.267_in, -31.308_in}, fwd, DRIVE_SPEED});
+
+  // Move to point (55.267, -12.066)
+  chassis.pid_odom_set({{{55.267_in, -12.066_in}, fwd, DRIVE_SPEED},
+                        {{55.456_in, 12.081_in}, fwd, SLOW_INTAKE}},
+                       true);
+  chassis.pid_wait_until(0);
+  // Intake on --> 4 red blocks
   chassis.pid_wait();
-  chassis.pid_odom_set({{-64_in, 27_in, 245_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{-62_in, 10_in, 180_deg}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  // finish
+  // Intake off
+
+  // Move to point (35.27, 34.342)
+  chassis.pid_odom_set({{35.27_in, 34.342_in}, fwd, DRIVE_SPEED});
+
+  // Turn to point (9.425, 9.251)
+  chassis.pid_turn_set({9.425_in, 9.251_in}, fwd, 90);
+
+  // Move to point (9.425, 9.251)
+  chassis.pid_odom_set({{9.425_in, 9.251_in}, fwd, DRIVE_SPEED});
+
+  // Score Middle Goal / Outtake on
+
+  // Move to point (47.155, 47.547)
+  chassis.pid_odom_set({{47.155_in, 47.547_in}, rev, DRIVE_SPEED});
+
+  // Turn to point (47.155, 64.714)
+  chassis.pid_turn_set({47.155_in, 64.714_in}, fwd, 90);
+
+
 }
 
 // top bot
-void skills2() {
+void skills_top_bot() {
   chassis.odom_xyt_set(-53_in, -11_in, 0_deg);
   chassis.pid_odom_set({{-47_in, 47_in}, fwd, DRIVE_SPEED});
   chassis.pid_turn_set({-67_in, 47_in}, fwd, 90);
@@ -503,30 +539,4 @@ void skills2() {
   chassis.pid_turn_set({-63.288_in, -5.242_in}, fwd, 90);
   chassis.pid_odom_set({{-63.52_in, -8.258_in, 0_deg}, rev, DRIVE_SPEED});
   // finish
-}
-
-// red
-void red_skills_1() {
-  skills1();
-}
-
-void red_skills_2() {
-  skills2();
-}
-
-// blue
-void blue_skills_1() {
-  chassis.odom_x_flip();
-  chassis.odom_theta_flip();
-  skills1();
-}
-
-void blue_skills_2() {
-  chassis.odom_x_flip();
-  chassis.odom_theta_flip();
-  skills2();
-}
-
-
-void head_two_head() {
 }

@@ -47,7 +47,9 @@
 #include "autons.hpp"
 #include "subsystems.hpp"
 #include "intake.hpp"
-
+// #include "outtake.hpp"
+// #include "conveyor.hpp"
+// #include "color_detection.hpp"
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
