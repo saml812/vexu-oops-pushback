@@ -48,7 +48,7 @@
 #include "subsystems.hpp"
 #include "intake.hpp"
 // #include "outtake.hpp"
-// #include "conveyor.hpp"
+#include "conveyor.hpp"
 // #include "color_detection.hpp"
 
 /**
