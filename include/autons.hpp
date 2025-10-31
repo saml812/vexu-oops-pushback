@@ -18,4 +18,8 @@ void odom_boomerang_injected_pure_pursuit_example();
 void measure_offsets();
 
 // custom autos
-void skills();
+void match_loader();
+void skills_bottom_bot();
+void skills_top_bot();
+void head_two_head_bottom(const std::string& color);
+void head_two_head_top(const std::string& color);
