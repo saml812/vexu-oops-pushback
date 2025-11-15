@@ -1,7 +1,28 @@
 1. Auto layout (skills and head to head)
 
 2. Intake
-3. Outtake
+3. Outtake (Two outtake motors and two conveyor)
 4. Conveyor
 5. Pneumatics
 6. Color detection (maybe)
+
+
+
+
+Controller mapping
+Left stick --> forward and backwards
+Right stick --> turning
+
+x --> conveyor up
+b --> conveyor down
+
+r1 --> intake fowards
+r2 --> intake backwards
+
+l1 --> outtake forwards
+l2 --> outtake backwards
+
+up_arrow --> score fast
+down_arrow --> score slow
+
+a --> piston extend and retract

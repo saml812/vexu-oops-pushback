@@ -8,10 +8,10 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {1, 2, 3},     // Left Chassis Ports (negative port will reverse it!)
-    {8, 9, 10},  // Right Chassis Ports (negative port will reverse it!)
+    {1, 9, 10},     // Left Chassis Ports (negative port will reverse it!)
+    {5, 7, 8},  // Right Chassis Ports (negative port will reverse it!)
 
-    11,      // IMU Port
+    6,      // IMU Port
     4.125,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
     343);   // Wheel RPM = cartridge * (motor gear / wheel gear)
 
@@ -79,6 +79,7 @@ void initialize() {
   chassis.initialize();
   ez::as::initialize();
   master.rumble(chassis.drive_imu_calibrated() ? "." : "---");
+  autonomous();
 }
 
 /**
@@ -134,7 +135,8 @@ void autonomous() {
   to be consistent
   */
 
-  ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+//   ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+    drive_example();
 }
 
 /**
@@ -249,13 +251,14 @@ void opcontrol() {
     ez_template_extras();
 
     // chassis.opcontrol_tank();  // Tank control
-    chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
+    // chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
     // chassis.opcontrol_arcade_standard(ez::SINGLE);  // Standard single arcade
     // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
     // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
 
     // . . .
     // Put more user control code here!
+    main_controls();
     // . . .
 
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME

@@ -6,7 +6,7 @@
 /////
 
 // These are out of 127
-const int DRIVE_SPEED = 110;
+const int DRIVE_SPEED = 50;
 const int SLOW_INTAKE = 40;
 const int TURN_SPEED = 90;
 const int SWING_SPEED = 110;

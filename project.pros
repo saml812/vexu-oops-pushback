@@ -424,7 +424,7 @@
       }
     },
     "upload_options": {
-      "description": "Test",
+      "description": "Test Code",
       "slot": 4
     },
     "use_early_access": false
