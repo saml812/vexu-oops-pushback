@@ -6,6 +6,8 @@
 #include "api.h"
 
 // Controller mapping functions
+
+// Control only the two bottom intake motors
 void control_intake() {
   if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
     // R1 - intake forward
@@ -18,6 +20,7 @@ void control_intake() {
   }
 }
 
+// Control all intake motors
 void control_full_intake() {
   if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
     // L1 - full intake set_speed (all motors set_speed + hood open)

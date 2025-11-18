@@ -8,8 +8,8 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {1, 9, 10},     // Left Chassis Ports (negative port will reverse it!)
-    {5, 7, 8},  // Right Chassis Ports (negative port will reverse it!)
+    {1, 9, 10},  // Left Chassis Ports (negative port will reverse it!)
+    {5, 7, 8},   // Right Chassis Ports (negative port will reverse it!)
 
     6,      // IMU Port
     4.125,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
@@ -135,8 +135,8 @@ void autonomous() {
   to be consistent
   */
 
-//   ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
-    drive_example();
+  //   ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+  drive_example();
 }
 
 /**
@@ -229,6 +229,9 @@ void ez_template_extras() {
   }
 }
 
+ExpoDrive driveCurve(1.028, 32.2, 127.0, 27.7);
+ExpoDrive turnCurve(1.028, 32.2, 127.0, 27.7);
+
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -250,16 +253,24 @@ void opcontrol() {
     // Gives you some extras to make EZ-Template ezier
     ez_template_extras();
 
-    // chassis.opcontrol_tank();  // Tank control
-    // chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
-    // chassis.opcontrol_arcade_standard(ez::SINGLE);  // Standard single arcade
-    // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
-    // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
+    // Drive operation control
+    int fwd_stick = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+    int turn_stick = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
 
-    // . . .
-    // Put more user control code here!
+    double fwdOutput = driveCurve.calculate(fwd_stick);
+    double turnOutput = turnCurve.calculate(turn_stick);
+
+    double leftPower = fwdOutput + turnOutput;
+    double rightPower = fwdOutput - turnOutput;
+
+    // Clamp values to valid range [-127, 127]
+    leftPower = std::clamp(leftPower, -127.0, 127.0);
+    rightPower = std::clamp(rightPower, -127.0, 127.0);
+
+    chassis.drive_set(leftPower, rightPower);
+
     main_controls();
-    // . . .
+    //speed_control();
 
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
