@@ -7,20 +7,17 @@
 6. Color detection (maybe)
 
 
-
-
 Controller mapping
 Left stick --> forward and backwards
 Right stick --> turning
 
-x --> conveyor up
-b --> conveyor down
+R1 Intake in (hold)
+R2 Intake outwards (hold)
 
-r1 --> intake fowards
-r2 --> intake backwards
+L1 Full intake spin and hood open (hold)
+L2 intake pistons (hold)
 
-l1 --> outtake forwards
-l2 --> outtake backwards
+x - park piston
 
 up_arrow --> score fast
 down_arrow --> score slow

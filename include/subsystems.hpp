@@ -11,9 +11,9 @@ extern Drive chassis;
 // inline pros::Motor intake(1);
 // inline pros::adi::DigitalIn limit_switch('A');
 
-inline Intake intake(1,2);
-inline Intake outtake(3,4);
-inline Intake conveyor(5,6);
+inline Intake front_intake(1,2);
+inline Intake top_intake(3,4);
+inline Intake bottom_intake(5,6);
 
 inline ez::Piston lift1('A');
 inline ez::Piston lift2('B');

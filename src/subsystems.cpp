@@ -11,12 +11,12 @@
 void control_intake() {
   if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
     // R1 - intake forward
-    intake.set_speed(127);  // Forward at full speed
+    front_intake.set_speed(127);  // Forward at full speed
   } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
     // R2 - intake reverse
-    intake.set_speed(-127);  // Reverse at full speed
+    front_intake.set_speed(-127);  // Reverse at full speed
   } else {
-    intake.set_speed(0);  // Stop intake
+    front_intake.set_speed(0);  // Stop intake
   }
 }
 
@@ -24,14 +24,14 @@ void control_intake() {
 void control_full_intake() {
   if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
     // L1 - full intake set_speed (all motors set_speed + hood open)
-    intake.set_speed(127);
-    conveyor.set_speed(127);
-    outtake.set_speed(127);
+    front_intake.set_speed(127);
+    bottom_intake.set_speed(127);
+    top_intake.set_speed(127);
     hood.set(true);
   } else {
-    intake.stop();
-    outtake.stop();
-    conveyor.stop();
+    front_intake.stop();
+    bottom_intake.stop();
+    top_intake.stop();
     hood.set(false);
   }
 }
