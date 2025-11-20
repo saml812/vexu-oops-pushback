@@ -1,17 +1,36 @@
 #pragma once
 
-// Enum states for different modes
+/**
+ * @brief Speed control for robot
+ * 
+ * Provides different speed profiles
+ */
+
+/// @brief Enumeration of robot speed states
 enum state {
-  STOP = 0,           // System is stopped
-  INTAKE = 1,         // Intaking objects
-  SCORE = 2,          // Scoring at max speed
-  SCORE_SLOWLY = 3,   // Scoring at slow speed
+  SCORE_FAST = 1,
+  SCORE_SLOW = 2,
 };
 
-// Variables for current state and speed
-inline state current_state = STOP;
-inline int current_speed = 0;
+// Speed constants for each state
+const int SCORE_FAST_SPEED = 127;
+const int SCORE_SLOW_SPEED = 64;
 
-// Get and Set functions
+// Global state variables
+inline state current_state = SCORE_FAST;  /// Current state
+inline int current_speed = 127;           /// Current speed
+
+/**
+ * @brief Get the current operational state
+ * 
+ * @return state Current state enum value
+ */
 state get_current_state();
+
+/**
+ * @brief Set a new state and speed
+ * 
+ * @param new_state The new state
+ * @param new_speed The new speed value
+ */
 void set_current_state(state new_state, int new_speed);
