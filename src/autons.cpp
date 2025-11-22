@@ -241,11 +241,11 @@ void interfered_example() {
 // Make your own autonomous functions here!
 // . . .
 void match_load() {
-  auton_control_intake_pistons("extend");
-  auton_control_all_intakes_speed(127);
-  pros::delay(1000);
-  auton_control_all_intakes_speed(0);
-  auton_control_intake_pistons("retract");
+//   auton_control_intake_pistons("extend");
+//   auton_control_all_intakes_speed(127);
+//   pros::delay(1000);
+//   auton_control_all_intakes_speed(0);
+//   auton_control_intake_pistons("retract");
 //   chassis.pid_drive_set(-12_in, DRIVE_SPEED, true, true);
 //   chassis.pid_turn_set(90_deg, DRIVE_SPEED);
 }

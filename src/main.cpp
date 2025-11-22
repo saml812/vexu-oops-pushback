@@ -9,7 +9,7 @@
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
     {-10, 16, -18, 20},  // Left Chassis Ports (negative port will reverse it!)
-    {-5, 7, -15, },   // Right Chassis Ports (negative port will reverse it!)
+    {-5, 7, -15, 4},   // Right Chassis Ports (negative port will reverse it!)
 
     6,      // IMU Port
     4.125,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
@@ -263,7 +263,7 @@ void opcontrol() {
 
     chassis.drive_set(leftPower, rightPower);
 
-    main_controls();
+    // main_controls();
 
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
