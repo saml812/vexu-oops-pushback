@@ -79,3 +79,164 @@ void update_controls() {
   control_park_piston();
   control_speed();
 }
+
+// Autonomous control functions
+
+// /**
+//  * @brief Control front intake in autonomous
+//  * @param state "on" to activate, "off" to deactivate
+//  */
+// void auton_control_intake(const std::string& state) {
+//   if (state == "forward") {
+//     front_intake.set_speed(127);  // Full forward
+//   } else if (state == "off") {
+//     front_intake.set_speed(0);  // Stop
+//   } else if (state == "reverse") {
+//     front_intake.set_speed(-127);  // Full reverse
+//   }
+// }
+
+// /**
+//  * @brief Control bottom intake in autonomous
+//  * @param state "on" to activate, "off" to deactivate
+//  */
+// void auton_control_bottom_intake(const std::string& state) {
+//   if (state == "forward") {
+//     bottom_intake.set_speed(127);  // Full forward
+//   } else if (state == "off") {
+//     bottom_intake.set_speed(0);  // Stop
+//   } else if (state == "reverse") {
+//     bottom_intake.set_speed(-127);  // Full reverse
+//   }
+// }
+
+// /**
+//  * @brief Control top intake in autonomous
+//  * @param state "on" to activate, "off" to deactivate
+//  */
+// void auton_control_top_intake(const std::string& state) {
+//   if (state == "forward") {
+//     top_intake.set_speed(127);  // Full forward
+//   } else if (state == "off") {
+//     top_intake.set_speed(0);  // Stop
+//   } else if (state == "reverse") {
+//     top_intake.set_speed(-127);  // Full reverse
+//   }
+// }
+
+// /**
+//  * @brief Control all intakes simultaneously in autonomous
+//  * @param state "on" to activate, "off" to deactivate
+//  */
+// void auton_control_all_intakes(const std::string& state) {
+//   auton_control_intake(state);
+//   auton_control_bottom_intake(state);
+//   auton_control_top_intake(state);
+// }
+
+/**
+ * @brief Control intake with specific speed in autonomous
+ * @param speed Motor speed (-127 to 127)
+ */
+void auton_control_intake_speed(int speed) {
+  front_intake.set_speed(speed);
+}
+
+/**
+ * @brief Control bottom intake with specific speed in autonomous
+ * @param speed Motor speed (-127 to 127)
+ */
+void auton_control_bottom_intake_speed(int speed) {
+  bottom_intake.set_speed(speed);
+}
+
+/**
+ * @brief Control top intake with specific speed in autonomous
+ * @param speed Motor speed (-127 to 127)
+ */
+void auton_control_top_intake_speed(int speed) {
+  top_intake.set_speed(speed);
+}
+
+/**
+ * @brief Control all intakes with specific speed in autonomous
+ * @param speed Motor speed (-127 to 127)
+ */
+void auton_control_all_intakes_speed(int speed) {
+  front_intake.set_speed(speed);
+  bottom_intake.set_speed(speed);
+  top_intake.set_speed(speed);
+}
+
+/**
+ * @brief Control intake pistons in autonomous
+ * @param state "extend" or "retract"
+ */
+void auton_control_intake_pistons(const std::string& state) {
+  if (state == "extend") {
+    left_intake_piston.set(true);
+    right_intake_piston.set(true);
+  } else if (state == "retract") {
+    left_intake_piston.set(false);
+    right_intake_piston.set(false);
+  }
+}
+
+/**
+ * @brief Control lift pistons in autonomous
+ * @param state "extend" or "retract"
+ */
+void auton_control_lift_pistons(const std::string& state) {
+  if (state == "extend") {
+    left_lift_piston.set(true);
+    right_lift_piston.set(true);
+  } else if (state == "retract") {
+    left_lift_piston.set(false);
+    right_lift_piston.set(false);
+  }
+}
+
+/**
+ * @brief Control hood piston in autonomous
+ * @param state "extend" or "retract"
+ */
+void auton_control_hood(const std::string& state) {
+  if (state == "extend") {
+    hood.set(true);
+  } else if (state == "retract") {
+    hood.set(false);
+  }
+}
+
+/**
+ * @brief Control park piston in autonomous
+ * @param state "extend" or "retract"
+ */
+void auton_control_park(const std::string& state) {
+  if (state == "extend") {
+    park.set(true);
+  } else if (state == "retract") {
+    park.set(false);
+  }
+}
+
+/**
+ * @brief Set chassis speed state in autonomous
+ * @param state "fast", "slow", or "normal"
+ */
+void auton_control_speed(const std::string& state) {
+  if (state == "fast") {
+    set_current_state(SCORE_FAST, SCORE_FAST_SPEED);
+  } else if (state == "slow") {
+    set_current_state(SCORE_SLOW, SCORE_SLOW_SPEED);
+  }
+}
+
+/**
+ * @brief Stop all intakes in autonomous
+ */
+void auton_stop_all_intakes() {
+  front_intake.set_speed(0);
+  bottom_intake.set_speed(0);
+  top_intake.set_speed(0);
+}
