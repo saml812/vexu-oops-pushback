@@ -2,79 +2,74 @@
 
 #include "EZ-Template/api.hpp"
 #include "api.h"
-#include "intake.hpp"
 #include "speed_control.hpp"
 
 extern Drive chassis;  // Drivetrain chassis object
 
-// /**
-//  * @brief Subsystem declarations
-//  *
-//  * Contains all motor controllers, pistons, and subsystem objects and functions for the robot
-//  */
+/**
+ * @brief Subsystem declarations
+ *
+ * Contains all motor controllers, pistons, and subsystem objects and functions for the robot
+ */
 
-// // Intake subsystem motor groups
-// // extern Intake front_intake(1, 2);   // Front intake mechanism
-// // extern Intake bottom_intake(3, 4);  // Bottom intake mechanism
-// // extern Intake top_intake(5, 6);     // Top intake mechanism
+// Intake motors
+inline pros::Motor left_front_intake(1);    //
+inline pros::Motor right_front_intake(2);   //
+inline pros::Motor left_bottom_intake(3);   //
+inline pros::Motor right_bottom_intake(4);  //
+inline pros::Motor left_top_intake(5);      //
+inline pros::Motor right_top_intake(6);     //
 
+// Pneumatic pistons
+inline ez::Piston left_lift_piston('A');   // Left side lift piston
+inline ez::Piston right_lift_piston('B');  // Right side lift piston
 
+inline ez::Piston left_intake_piston('C');   // Left intake piston
+inline ez::Piston right_intake_piston('D');  // Right intake piston
 
+inline ez::Piston hood('E');     // Hood piston
+inline ez::Piston park('F');     // Parking piston
+inline ez::Piston descore('G');  // Descore piston
 
-// // Pneumatic piston controls
-// extern ez::Piston left_lift_piston('A');   // Left side lift piston
-// extern ez::Piston right_lift_piston('B');  // Right side lift piston
+// Controller mapping functions
 
-// extern ez::Piston left_intake_piston('C');   // Left intake piston
-// extern ez::Piston right_intake_piston('D');  // Right intake piston
+/**
+ * @brief Control front intakes
+ */
+void control_intakes();
 
-// extern ez::Piston hood('E');  // Hood piston
-// extern ez::Piston park('F');  // Parking piston
+/**
+ * @brief Control lift pistons
+ */
+void control_lift_pistons();
 
-// // Controller mapping functions
+/**
+ * @brief Control park piston
+ */
+void control_park_piston();
 
-// /**
-//  * @brief Control front intakes
-//  */
-// void control_intake();
+/**
+ * @brief Control descore piston
+ */
+void control_descore_piston();
 
-// /**
-//  * @brief Control all intakes simultaneously
-//  */
-// void control_full_intake();
+/**
+ * @brief Control speed states
+ */
+void control_speed();
 
-// /**
-//  * @brief Control intake pistons
-//  */
-// void control_intake_pistons();
+/**
+ * @brief Main control function to be called in opcontrol
+ *
+ * Calls all subsystem controls functions
+ */
+void main_controls();
 
-// /**
-//  * @brief Control lift pistons
-//  */
-// void control_lift_pistons();
-
-// /**
-//  * @brief Control park piston
-//  */
-// void control_park_piston();
-
-// /**
-//  * @brief Control speed states
-//  */
-// void control_speed();
-
-// /**
-//  * @brief Main control function to be called in opcontrol
-//  *
-//  * Calls all subsystem controls functions
-//  */
-// void main_controls();
-
-// // Autonomous control functions
-// // void auton_control_intake(const std::string& state);
-// // void auton_control_bottom_intake(const std::string& state);
-// // void auton_control_top_intake(const std::string& state);
-// // void auton_control_all_intakes(const std::string& state);
+// Autonomous control functions
+// void auton_control_intake(const std::string& state);
+// void auton_control_bottom_intake(const std::string& state);
+// void auton_control_top_intake(const std::string& state);
+// void auton_control_all_intakes(const std::string& state);
 // void auton_control_intake_speed(const int speed);
 // void auton_control_bottom_intake_speed(const int speed);
 // void auton_control_top_intake_speed(const int speed);

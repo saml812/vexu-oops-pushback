@@ -9,7 +9,7 @@
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
     {-10, 16, -18, 20},  // Left Chassis Ports (negative port will reverse it!)
-    {-5, 7, -15, 4},   // Right Chassis Ports (negative port will reverse it!)
+    {-5, 7, -15, 4},     // Right Chassis Ports (negative port will reverse it!)
 
     6,      // IMU Port
     4.125,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
@@ -58,14 +58,6 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Drive\n\nDrive forward and come back", drive_example},
-      {"Turn\n\nTurn 3 times.", turn_example},
-      {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
-      {"Drive and Turn\n\nSlow down during drive", wait_until_change_speed},
-      {"Swing Turn\n\nSwing in an 'S' curve", swing_example},
-      {"Motion Chaining\n\nDrive forward, turn, and come back, but blend everything together :D", motion_chaining},
-      {"Combine all 3 movements", combining_movements},
-      {"Interference\n\nAfter driving forward, robot performs differently if interfered or not", interfered_example},
       {"Test", skills_bottom_bot},
   });
 
@@ -73,7 +65,7 @@ void initialize() {
   chassis.initialize();
   ez::as::initialize();
   master.rumble(chassis.drive_imu_calibrated() ? "." : "---");
-//   autonomous();
+  //   autonomous();
 }
 
 /**
@@ -130,7 +122,6 @@ void autonomous() {
   */
 
   //   ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
-  drive_example();
 }
 
 /**
@@ -223,8 +214,8 @@ void ez_template_extras() {
   }
 }
 
-ExpoDrive driveCurve(1.028, 32.2, 127.0, 27.7);
-ExpoDrive turnCurve(1.028, 32.2, 127.0, 27.7);
+// ExpoDrive driveCurve(1.028, 32.2, 127.0, 27.7);
+// ExpoDrive turnCurve(1.028, 32.2, 127.0, 27.7);
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -240,30 +231,46 @@ ExpoDrive turnCurve(1.028, 32.2, 127.0, 27.7);
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+  // Serial communication
+  pros::Serial serial(1, 9600);  // Serial(port, baudrate)
+
+  std::uint8_t buffer[] = "Hello";
+
+  serial.write(buffer, sizeof(buffer) - 1);
+
+  FILE *fp1, *fp2;
+  fp1 = fopen("/dev/port20", "wb");
+  fp2 = fopen("/dev/port21", "rb");
+  
+
+
+  // End
   // This is preference to what you like to drive on
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
 
   while (true) {
     // Gives you some extras to make EZ-Template ezier
-    ez_template_extras();
+    // ez_template_extras();
 
     // Drive operation control
-    int fwd_stick = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-    int turn_stick = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+    // int fwd_stick = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+    // int turn_stick = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
 
-    double fwdOutput = driveCurve.calculate(fwd_stick);
-    double turnOutput = turnCurve.calculate(turn_stick);
+    // double fwdOutput = driveCurve.calculate(fwd_stick);
+    // double turnOutput = turnCurve.calculate(turn_stick);
 
-    double leftPower = fwdOutput + turnOutput;
-    double rightPower = fwdOutput - turnOutput;
+    // double leftPower = fwdOutput + turnOutput;
+    // double rightPower = fwdOutput - turnOutput;
 
-    // Clamp values to valid range [-127, 127]
-    leftPower = std::clamp(leftPower, -127.0, 127.0);
-    rightPower = std::clamp(rightPower, -127.0, 127.0);
+    // // Clamp values to valid range [-127, 127]
+    // leftPower = std::clamp(leftPower, -127.0, 127.0);
+    // rightPower = std::clamp(rightPower, -127.0, 127.0);
 
-    chassis.drive_set(leftPower, rightPower);
+    // chassis.drive_set(leftPower, rightPower);
 
-    // main_controls();
+    chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
+
+    main_controls();
 
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }

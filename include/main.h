@@ -42,11 +42,11 @@
 //#include "okapi/api.hpp"
 //#include "pros/api_legacy.h"
 #include "EZ-Template/api.hpp"
+#include "pros/serial.hpp"
 
 // More includes here...
 #include "autons.hpp"
 #include "subsystems.hpp"
-#include "intake.hpp"
 #include "ExpoDrive.hpp"
 
 /**
