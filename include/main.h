@@ -48,6 +48,7 @@
 #include "autons.hpp"
 #include "subsystems.hpp"
 #include "ExpoDrive.hpp"
+#include "otos.hpp"
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do

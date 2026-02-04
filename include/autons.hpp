@@ -13,7 +13,9 @@ void interfered_example();
 
 // custom autos
 void match_loader();
+void red_top();
+void red_bot();
+void blue_top();
+void blue_bot();
 void skills_bottom_bot();
 void skills_top_bot();
-void head_two_head_bottom(const std::string& color);
-void head_two_head_top(const std::string& color);

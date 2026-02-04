@@ -64,20 +64,3 @@ void control_speed();
  * Calls all subsystem controls functions
  */
 void main_controls();
-
-// Autonomous control functions
-// void auton_control_intake(const std::string& state);
-// void auton_control_bottom_intake(const std::string& state);
-// void auton_control_top_intake(const std::string& state);
-// void auton_control_all_intakes(const std::string& state);
-// void auton_control_intake_speed(const int speed);
-// void auton_control_bottom_intake_speed(const int speed);
-// void auton_control_top_intake_speed(const int speed);
-// void auton_control_all_intakes_speed(const int speed);
-
-// void auton_control_intake_pistons(const std::string& state);
-// void auton_control_lift_pistons(const std::string& state);
-// void auton_control_hood(const std::string& state);
-// void auton_control_park(const std::string& state);
-// void auton_control_speed(const std::string& state);
-// void auton_stop_all_intakes();

@@ -8,10 +8,10 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {-10, 16, -18, 20},  // Left Chassis Ports (negative port will reverse it!)
-    {-5, 7, -15, 4},     // Right Chassis Ports (negative port will reverse it!)
+    {11, -12, 13, -14, 15},   // Left Chassis Ports (negative port will reverse it!)
+    {-16, 17, -18, 19, -20},  // Right Chassis Ports (negative port will reverse it!)
 
-    6,      // IMU Port
+    10,     // IMU Port
     4.125,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
     600);   // Wheel RPM = cartridge * (motor gear / wheel gear)
 
@@ -49,7 +49,7 @@ void initialize() {
   chassis.opcontrol_drive_activebrake_set(0.0);   // Sets the active brake kP. We recommend ~2.  0 will disable.
   chassis.opcontrol_curve_default_set(0.0, 0.0);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
-  // Set the drive to your own constants from autons.cpp!
+  // Set the drive to your own constants from autonsw.cpp!
   default_constants();
 
   // These are already defaulted to these buttons, but you can change the left/right curve buttons here!
@@ -58,14 +58,19 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Test", skills_bottom_bot},
+      {"Red Top", red_top},
+      {"Red Bot", red_bot},
+      {"Blue Top", blue_top},
+      {"Blue Bot", blue_bot},
+      {"Move PID", drive_example},
+      {"Turn PID", turn_example},
+      {"Skills", skills_bottom_bot},
   });
 
   // Initialize chassis and auton selector
   chassis.initialize();
   ez::as::initialize();
   master.rumble(chassis.drive_imu_calibrated() ? "." : "---");
-  //   autonomous();
 }
 
 /**
@@ -121,7 +126,7 @@ void autonomous() {
   to be consistent
   */
 
-  //   ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+  ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
 }
 
 /**
@@ -232,17 +237,12 @@ void ez_template_extras() {
  */
 void opcontrol() {
   // Serial communication
-  pros::Serial serial(1, 9600);  // Serial(port, baudrate)
+  //   pros::Serial serial(1, 115200);  // Serial(port, baudrate)
+  //   serial.flush();
 
-  std::uint8_t buffer[] = "Hello";
-
-  serial.write(buffer, sizeof(buffer) - 1);
-
-  FILE *fp1, *fp2;
-  fp1 = fopen("/dev/port20", "wb");
-  fp2 = fopen("/dev/port21", "rb");
-  
-
+  //   uint8_t tx_buffer[] = "testing 123\n";
+  //   uint8_t rx_buffer[32];
+  //   int32_t bytes_read;
 
   // End
   // This is preference to what you like to drive on
@@ -250,7 +250,7 @@ void opcontrol() {
 
   while (true) {
     // Gives you some extras to make EZ-Template ezier
-    // ez_template_extras();
+    ez_template_extras();
 
     // Drive operation control
     // int fwd_stick = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
@@ -268,9 +268,24 @@ void opcontrol() {
 
     // chassis.drive_set(leftPower, rightPower);
 
+    // Serial Test
+    // read test
+    // if (serial.get_read_avail() > 0) {
+    //   bytes_read = serial.read(rx_buffer, sizeof(rx_buffer));
+    //   if (bytes_read > 0) {
+    //     std::cout << bytes_read << std::endl;
+    //   }
+    // }
+
+    // // write test
+    // serial.write(tx_buffer, sizeof(tx_buffer) - 1);
+
+    // pros::delay(1000);
+
+
     chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
 
-    main_controls();
+    // main_controls();
 
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
