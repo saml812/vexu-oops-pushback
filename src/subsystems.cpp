@@ -7,19 +7,36 @@
 
 // Controller mapping functions
 
+void arcadeDrive(double deadband) {
+  int power, turn, left, right = 0;
+
+  if (fabs(static_cast<float>(power)) < deadband) {
+    power = 0;
+  }
+  if (fabs(static_cast<float>(turn)) < deadband) {
+    turn = 0;
+  }
+
+  if (fabs(static_cast<float>(power)) > deadband || fabs(static_cast<float>(turn)) > deadband) {
+    left = power + (turn * 0.825);
+    right = power - (turn * 0.825);
+    chassis.drive_set(left, right);
+  } else {
+    chassis.drive_set(0, 0);
+  }
+}
+
 // Control all motors and intake pistons
 void control_intakes() {
   if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
     // R1 - intake forward
-    left_front_intake.move(current_speed);  // Forward at current state speed
-    right_front_intake.move(current_speed);
+    left_bottom_intake.move(current_speed);  // Forward at current state speed
+    right_bottom_intake.move(current_speed);
   } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
     // R2 - intake reverse
-    left_front_intake.move(-current_speed);  // Reverse at current state speed
-    right_front_intake.move(-current_speed);
+    left_bottom_intake.move(-current_speed);  // Reverse at current state speed
+    right_bottom_intake.move(-current_speed);
   } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {  // L1 - full intake spin + hood open
-    left_front_intake.move(current_speed);
-    right_front_intake.move(current_speed);
     left_bottom_intake.move(current_speed);
     right_bottom_intake.move(current_speed);
     left_top_intake.move(current_speed);
@@ -29,8 +46,6 @@ void control_intakes() {
     left_intake_piston.set(true);                                  // Extend pistons
     right_intake_piston.set(true);
   } else {
-    left_front_intake.move(0);  // Stop intake
-    right_front_intake.move(0);
     left_bottom_intake.move(0);
     right_bottom_intake.move(0);
     left_top_intake.move(0);
@@ -73,7 +88,7 @@ void control_speed() {
   }
 }
 
-// Main control function to be called in opcontrol
+// Main function to be called in opcontrol
 void main_controls() {
   control_intakes();
   control_lift_pistons();
