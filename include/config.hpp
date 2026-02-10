@@ -22,6 +22,7 @@ inline double active_brake_constant = 2.0;                            // Sets th
 inline std::pair<double, double> drive_curve_constants = {0.0, 0.0};  // Defaults for curve. If using tank, only the first parameter is used
 
 extern Drive chassis;
+extern pros::Controller master;
 
 // Intake motors
 inline pros::Motor left_bottom_intake(1);

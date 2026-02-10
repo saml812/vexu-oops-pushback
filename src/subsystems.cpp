@@ -5,23 +5,40 @@
 
 // Controller mapping functions
 
+const double POWER_SLEW_RATE = 15.0;
+const double TURN_SLEW_RATE = 20.0;
+
+static double lastLeftPower = 0.0;
+static double lastRightPower = 0.0;
+
 void split_arcade_drive(double deadband) {
-  int power, turn, left, right = 0;
+  int power = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+  int turn = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
 
-  if (fabs(static_cast<float>(power)) < deadband) {
-    power = 0;
-  }
-  if (fabs(static_cast<float>(turn)) < deadband) {
-    turn = 0;
-  }
+  if (fabs(power) < deadband) power = 0;
+  if (fabs(turn) < deadband) turn = 0;
 
-  if (fabs(static_cast<float>(power)) > deadband || fabs(static_cast<float>(turn)) > deadband) {
-    left = power + (turn * 0.825);
-    right = power - (turn * 0.825);
-    chassis.drive_set(left, right);
+  int left = power + turn;
+  int right = power - turn;
+
+  double leftPower;
+  if (left > lastLeftPower) {
+    leftPower = lastLeftPower + fmin(left - lastLeftPower, POWER_SLEW_RATE);
   } else {
-    chassis.drive_set(0, 0);
+    leftPower = lastLeftPower - fmin(lastLeftPower - left, POWER_SLEW_RATE);
   }
+
+  double rightPower;
+  if (right > lastRightPower) {
+    rightPower = lastRightPower + fmin(right - lastRightPower, POWER_SLEW_RATE);
+  } else {
+    rightPower = lastRightPower - fmin(lastRightPower - right, POWER_SLEW_RATE);
+  }
+
+  lastLeftPower = leftPower;
+  lastRightPower = rightPower;
+
+  chassis.drive_set(static_cast<int>(leftPower), static_cast<int>(rightPower));
 }
 
 // Control all motors and intake pistons
