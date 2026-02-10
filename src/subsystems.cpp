@@ -1,5 +1,3 @@
-#pragma once
-
 #include "subsystems.hpp"
 
 #include "EZ-Template/api.hpp"
@@ -43,16 +41,16 @@ void control_intakes() {
     right_top_intake.move(current_speed);
     hood.set(true);
   } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {  // L2 - extend when held, retract when released
-    left_intake_piston.set(true);                                  // Extend pistons
-    right_intake_piston.set(true);
+    left_lift_piston.set(true);                                    // Extend pistons
+    right_lift_piston.set(true);
   } else {
     left_bottom_intake.move(0);
     right_bottom_intake.move(0);
     left_top_intake.move(0);
     right_top_intake.move(0);
 
-    left_intake_piston.set(false);  // Retract intake pistons
-    right_intake_piston.set(false);
+    left_lift_piston.set(false);  // Retract intake pistons
+    right_lift_piston.set(false);
 
     hood.set(false);
   }
