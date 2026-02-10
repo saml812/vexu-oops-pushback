@@ -47,7 +47,6 @@
 // More includes here...
 #include "autons.hpp"
 #include "subsystems.hpp"
-#include "otos.hpp"
 #include "config.hpp"
 
 /**

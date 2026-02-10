@@ -45,4 +45,4 @@ void control_speed();
  */
 void main_controls();
 
-void arcadeDrive(double deadband);
+void split_arcade_drive(double deadband);

@@ -49,7 +49,7 @@ void initialize() {
   chassis.opcontrol_drive_activebrake_set(active_brake_constant);                                  // Sets the active brake kP. We recommend ~2.  0 will disable.
   chassis.opcontrol_curve_default_set(drive_curve_constants.first, drive_curve_constants.second);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
-  // Set the drive to your own constants from autonsw.cpp!
+  // Set the drive to your own constants from autons.cpp!
   default_constants();
 
   // These are already defaulted to these buttons, but you can change the left/right curve buttons here!
@@ -62,9 +62,10 @@ void initialize() {
       {"Red Bot", red_bot},
       {"Blue Top", blue_top},
       {"Blue Bot", blue_bot},
+      {"Skills Top", skills_top},
+      {"Skills Bot", skills_bot},
       {"Move PID", drive_example},
       {"Turn PID", turn_example},
-      {"Skills", skills_bottom_bot},
   });
 
   // Initialize chassis and auton selector
@@ -262,7 +263,7 @@ void opcontrol() {
     // pros::delay(1000);
 
     // chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
-    arcadeDrive(1.4);
+    split_arcade_drive(1.4);
 
     main_controls();
 

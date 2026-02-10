@@ -7,7 +7,7 @@
 
 // Controller mapping functions
 
-void arcadeDrive(double deadband) {
+void split_arcade_drive(double deadband) {
   int power, turn, left, right = 0;
 
   if (fabs(static_cast<float>(power)) < deadband) {
