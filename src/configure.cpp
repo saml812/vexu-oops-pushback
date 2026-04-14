@@ -22,6 +22,9 @@ pros::adi::DigitalOut wingFourBar('C');
 pros::adi::DigitalOut wing('D');
 pros::adi::DigitalOut midGoal('E');
 pros::adi::DigitalOut hood('F');
+pros::adi::DigitalOut basket('F');
+pros::adi::DigitalOut leverPiston('F');
+
 
 lemlib::Drivetrain drivetrain{
     &leftDrive,
@@ -110,10 +113,12 @@ void initializeRobot()
     matchLoader.set_value(false);
     intakeLift.set_value(false);
     // wingFourBar.set_value(true);
-
+    
     wing.set_value(true);
     midGoal.set_value(true);
     hood.set_value(false);
+    basket.set_value(false);
+    leverPiston.set_value(false);
 
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
     chassis.calibrate();

@@ -24,7 +24,8 @@ namespace
     std::uint32_t downIntakeStartMs = 0;
     bool intakeDriveCutActive = false;
 
-    bool basketUp = robotactions::isBasketUp();
+    bool basketUp = false;
+    bool leverUp = false;
 
     bool leverReturningDown = false;
     bool lastL1State = false;
@@ -132,12 +133,13 @@ void runScoringControl()
 
 void runWingHoldControl()
 {
-    // applyWingHold(master.get_digital(DIGITAL_L2));
+    bool l2Pressed = master.get_digital(DIGITAL_L2);
+    applyWingHold(l2Pressed);
 }
 
 void runR1IntakeControl()
 {
-    if (master.get_digital(DIGITAL_R1))
+    if (master.get_digital(DIGITAL_R1) && !leverUp)
     {
         robotactions::spinAllIntake(robotactions::kFullPowerMv);
     }
@@ -147,78 +149,85 @@ void runL1LeverControl()
 {
     static bool lastL1State = false;
     static bool leverReturningDown = false;
-    const double LEVER_DOWN_POSITION_THRESHOLD = 5.0; // degrees
+    const double LEVER_DOWN_POSITION_THRESHOLD = 5.0;
 
     bool currentL1State = master.get_digital(DIGITAL_L1);
-    bool basketUp = robotactions::isBasketUp();
 
-    if (currentL1State && basketUp) {
+    if (currentL1State && basketUp)
+    {
         robotactions::setLeverUp(true);
-    } else {
+        leverUp = true;
+    }
+    else
+    {
         robotactions::setLeverUp(false);
+        leverUp = false;
     }
 
     int leverPower = 0;
-    if (currentL1State) {
-        if (basketUp) {
+    if (currentL1State)
+    {
+        if (basketUp)
+        {
             leverPower = robotactions::kFullPowerMv;
-        } else {
+        }
+        else
+        {
             leverPower = robotactions::kFullPowerMv / 2;
         }
     }
 
-    if (lastL1State && !currentL1State) {
+    if (lastL1State && !currentL1State)
+    {
         leverReturningDown = true;
     }
     lastL1State = currentL1State;
 
-    if (currentL1State) {
+    if (currentL1State)
+    {
         leverReturningDown = false;
         robotactions::spinLever(leverPower);
     }
-    else if (leverReturningDown) {
+    else if (leverReturningDown)
+    {
         double pos = lever.get_position();
-        if (pos > LEVER_DOWN_POSITION_THRESHOLD) {
+        if (pos > LEVER_DOWN_POSITION_THRESHOLD)
+        {
             pros::delay(100);
             robotactions::spinLever(-robotactions::kFullPowerMv);
-        } else {
+        }
+        else
+        {
             robotactions::stopLever();
             leverReturningDown = false;
         }
     }
-    else {
+    else
+    {
         robotactions::stopLever();
     }
 }
 
-// void runR2IntakeControl()
-// {
-//     if (master.get_digital(DIGITAL_L2))
-//     {
-//         robotactions::spinLever(-robotactions::kFullPowerMv);
-//     }
-// }
-
 void runDownIntakeTimedControl()
 {
-    // if (!master.get_digital(DIGITAL_DOWN))
-    // {
-    //     downIntakeActive = false;
-    //     return;
-    // }
+    if (!master.get_digital(DIGITAL_DOWN))
+    {
+        downIntakeActive = false;
+        return;
+    }
 
-    // if (!downIntakeActive)
-    // {
-    //     downIntakeActive = true;
-    //     downIntakeStartMs = static_cast<std::uint32_t>(pros::millis());
-    // }
+    if (!downIntakeActive)
+    {
+        downIntakeActive = true;
+        downIntakeStartMs = static_cast<std::uint32_t>(pros::millis());
+    }
 
-    // const std::uint32_t elapsedMs = static_cast<std::uint32_t>(pros::millis()) - downIntakeStartMs;
-    // const int topRollerVoltage = elapsedMs < TOP_ROLLER_REVERSAL_MS ? -robotactions::kFullPowerMv : robotactions::kFullPowerMv;
-    // const bool midGoalShouldBeUp = elapsedMs < TOP_ROLLER_REVERSAL_MS ? true : false;
-    // robotactions::setIntakeVoltages(0, -robotactions::kFullPowerMv, topRollerVoltage, -robotactions::kFullPowerMv);
-    // midGoalUp = midGoalShouldBeUp;
-    // robotactions::setMidGoalUp(midGoalShouldBeUp);
+    const std::uint32_t elapsedMs = static_cast<std::uint32_t>(pros::millis()) - downIntakeStartMs;
+    const int topRollerVoltage = elapsedMs < TOP_ROLLER_REVERSAL_MS ? -robotactions::kFullPowerMv : robotactions::kFullPowerMv;
+    const bool midGoalShouldBeUp = elapsedMs < TOP_ROLLER_REVERSAL_MS ? true : false;
+    robotactions::setIntakeVoltages(-robotactions::kFullPowerMv);
+    midGoalUp = midGoalShouldBeUp;
+    robotactions::setMidGoalUp(midGoalShouldBeUp);
 }
 
 void runOuttakeControl()
@@ -274,6 +283,20 @@ void runInertialRecalibrationControl()
     }
 }
 
+void runBasketControl()
+{
+    if (isDebouncedNewPress(DIGITAL_X, TOGGLE_DEBOUNCE_MS))
+    {
+        basketUp = !basketUp;
+        robotactions::setBasketUp(basketUp);
+    }
+}
+
+void runWingAlignControl(){
+    return;
+}
+
+
 void runDriverControl()
 {
     runInertialRecalibrationControl();
@@ -281,6 +304,7 @@ void runDriverControl()
     runWingHoldControl();
     runMatchLoaderHoldControl();
     runWingFourBarToggleControl();
+    runBasketControl();
 
     robotactions::stopAllIntake();
 
@@ -296,6 +320,12 @@ void runDriverControl()
     wing4BarUp = true;
     robotactions::setWingFourBarUp(true);
 
+    basketUp = false;
+    robotactions::setBasketUp(false);
+
+    leverUp = false;
+    robotactions::setLeverUp(false);
+
     runL1LeverControl();
 
     if (master.get_digital(DIGITAL_R2))
@@ -308,19 +338,10 @@ void runDriverControl()
         downIntakeActive = false;
         runLowGoalControl();
     }
-    // else if (master.get_digital(DIGITAL_L1))
-    // {
-    //     downIntakeActive = false;
-    //     runL1LeverControl();
-    // }
     else if (master.get_digital(DIGITAL_R1))
     {
         downIntakeActive = false;
         runR1IntakeControl();
-    }
-    else if (master.get_digital(DIGITAL_L2))
-    {
-        downIntakeActive = false;
     }
     else if (master.get_digital(DIGITAL_DOWN))
     {
@@ -366,6 +387,16 @@ bool isMidGoalUp()
 bool isHoodUp()
 {
     return hoodUp;
+}
+
+bool isBasketUp()
+{
+    return basketUp;
+}
+
+bool isLeverUp()
+{
+    return leverUp;
 }
 
 int getFullIntakeVoltage()

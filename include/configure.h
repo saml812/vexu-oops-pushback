@@ -14,7 +14,6 @@ extern pros::v5::Motor rightIntake;
 // extern pros::v5::Motor leftLever;
 // extern pros::v5::Motor rightLever;
 
-// extern pros::v5::MotorGroup intake;
 extern pros::v5::MotorGroup lever;
 
 extern pros::IMU inertial;
@@ -25,8 +24,9 @@ extern pros::adi::DigitalOut wingFourBar;
 extern pros::adi::DigitalOut wing;
 extern pros::adi::DigitalOut midGoal;
 extern pros::adi::DigitalOut hood;
-extern pros::adi::DigitalOut basket;
+extern pros::adi::DigitalOut leverPiston;
 
+extern pros::adi::DigitalOut basket;
 extern lemlib::Drivetrain drivetrain;
 extern lemlib::OdomSensors sensors;
 extern lemlib::ControllerSettings linearController;

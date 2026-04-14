@@ -46,10 +46,6 @@ namespace robotactions
         setIntakeVoltages(voltageMv);
     }
 
-    // void spinFirstThreeIntake(int voltageMv)
-    // {
-    //     setIntakeVoltages(voltageMv, voltageMv, voltageMv, 0);
-    // }
 
     void spinLever(int voltageMv)
     {
@@ -120,24 +116,14 @@ namespace robotactions
         hood.set_value(up);
     }
 
-    void setLeverUp(bool up){
+    void setLeverUp(bool up)
+    {
         leverPiston.set_value(up);
     }
 
-    bool isLeverArmUp()
+    void setBasketUp(bool up)
     {
-        const double LEVER_UP_THRESHOLD_DEG = 5.0;
-        return lever.get_position() > LEVER_UP_THRESHOLD_DEG;
-    }
-
-    void setBasketUp(bool up){
         basket.set_value(up);
     }
-
-    bool isBasketUp()
-    {
-        return 
-    }
-
 
 } // namespace robotactions

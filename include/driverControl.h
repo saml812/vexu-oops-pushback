@@ -16,6 +16,8 @@ void runMatchLoaderHoldControl();
 void runWingFourBarToggleControl();
 void runInertialRecalibrationControl();
 void runDriverControl();
+void runBasketControl();
+void runWingAlignControl();
 
 bool isMatchLoaderDown();
 bool isIntakeLiftUp();
@@ -23,6 +25,8 @@ bool isWingFourBarUp();
 bool isWingUp();
 bool isMidGoalUp();
 bool isHoodUp();
+bool isLeverUp();
+bool isBasketUp();
 
 int getFullIntakeVoltage();
 int getPartialOuttakeVoltage();
