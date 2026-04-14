@@ -12,10 +12,7 @@ enum class DashboardMode {
     Opcontrol = Driver
 };
 
-enum class DriverProfile {
-    White,
-    Pink
-};
+enum class DriverProfile { White, Pink };
 
 void initDashboard();
 void setDashboardMode(DashboardMode mode);

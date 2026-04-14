@@ -11,13 +11,9 @@ void initialize() {
     setDashboardMode(DashboardMode::Disabled);
 }
 
-void disabled() {
-    setDashboardMode(DashboardMode::Disabled);
-}
+void disabled() { setDashboardMode(DashboardMode::Disabled); }
 
-void competition_initialize() {
-    setDashboardMode(DashboardMode::Disabled);
-}
+void competition_initialize() { setDashboardMode(DashboardMode::Disabled); }
 
 void autonomous() {
     setDashboardMode(DashboardMode::Autonomous);

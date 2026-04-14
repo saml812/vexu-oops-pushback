@@ -1,10 +1,10 @@
 #include "autonomous.h"
 
-#include "main.h"
-#include "configure.h"
-#include "robotActions.h"
-
 #include <cmath>
+
+#include "configure.h"
+#include "main.h"
+#include "robotActions.h"
 
 namespace {
 void autonDoNothing() {
@@ -26,7 +26,8 @@ void autonLeft() {
 
     pros::delay(1200);
 
-    chassis.moveToPose(chassis.getPose().x, 18, 180, 1800, {.forwards = false, .maxSpeed = 80});
+    chassis.moveToPose(chassis.getPose().x, 18, 180, 1800,
+                       {.forwards = false, .maxSpeed = 80});
     chassis.waitUntilDone();
     robotactions::runIntakeIn();
     // robotactions::setHoodUp(true);
@@ -57,7 +58,8 @@ void autonRight() {
 
     pros::delay(1200);
 
-    chassis.moveToPose(chassis.getPose().x, 18, 180, 1800, {.forwards = false, .maxSpeed = 80});
+    chassis.moveToPose(chassis.getPose().x, 18, 180, 1800,
+                       {.forwards = false, .maxSpeed = 80});
     chassis.waitUntilDone();
     robotactions::runIntakeIn();
     // robotactions::setHoodUp(true);
@@ -74,9 +76,10 @@ void autonRight() {
     chassis.moveToPoint(chassis.getPose().x, -20, 2000, {.forwards = false});
     pros::delay(20);
 }
-} // namespace
+}  // namespace
 
-void moveDistance(float distance, int timeout, lemlib::MoveToPointParams params, bool async) {
+void moveDistance(float distance, int timeout, lemlib::MoveToPointParams params,
+                  bool async) {
     // Convert heading to standard-position radians for correct trig.
     const lemlib::Pose pose = chassis.getPose(true, true);
     const float targetX = pose.x + (distance * std::cos(pose.theta));
@@ -86,25 +89,25 @@ void moveDistance(float distance, int timeout, lemlib::MoveToPointParams params,
 
 const char* autonRoutineName(AutonRoutine routine) {
     switch (routine) {
-    case AutonRoutine::Left:
-        return "Left";
-    case AutonRoutine::Right:
-        return "Right";
-    default:
-        return "Do Nothing";
+        case AutonRoutine::Left:
+            return "Left";
+        case AutonRoutine::Right:
+            return "Right";
+        default:
+            return "Do Nothing";
     }
 }
 
 void runAutonRoutine(AutonRoutine routine) {
     switch (routine) {
-    case AutonRoutine::Left:
-        autonLeft();
-        break;
-    case AutonRoutine::Right:
-        autonRight();
-        break;
-    default:
-        autonDoNothing();
-        break;
+        case AutonRoutine::Left:
+            autonLeft();
+            break;
+        case AutonRoutine::Right:
+            autonRight();
+            break;
+        default:
+            autonDoNothing();
+            break;
     }
 }

@@ -1,8 +1,8 @@
 #ifndef CONFIGURE_H_
 #define CONFIGURE_H_
 
-#include "main.h"
 #include "lemlib/api.hpp"
+#include "main.h"
 
 extern pros::Controller master;
 

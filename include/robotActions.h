@@ -1,16 +1,15 @@
 #ifndef ROBOT_ACTIONS_H_
 #define ROBOT_ACTIONS_H_
 
-#include "main.h"
-
 #include <cstdint>
+
+#include "main.h"
 
 namespace robotactions {
 constexpr int kFullPowerMv = 12000;
 constexpr int kPartialOuttakeMv = 3600;
 constexpr int kLowGoalPercent = 70;
 constexpr int kLowGoalMv = (kFullPowerMv * kLowGoalPercent) / 100;
-
 
 void setIntakeVoltages(int voltageMv);
 void stopAllIntake();
@@ -36,7 +35,6 @@ void setHoodUp(bool up);
 void setLeverUp(bool up);
 void setBasketUp(bool up);
 
-
-} // namespace robotactions
+}  // namespace robotactions
 
 #endif

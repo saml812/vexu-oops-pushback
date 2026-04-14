@@ -1,129 +1,74 @@
 #include "robotActions.h"
 
-#include "configure.h"
-
 #include <cstdint>
 
-namespace
-{
-    bool intakeRunning = false;
-    bool leverRunning = false;
+#include "configure.h"
+
+namespace {
+bool intakeRunning = false;
+bool leverRunning = false;
+}  // namespace
+
+namespace robotactions {
+void setIntakeVoltages(int voltageMv) {
+    leftIntake.move_voltage(voltageMv);
+    rightIntake.move_voltage(voltageMv);
+
+    // intake.move_voltage(voltageMv);
+    intakeRunning = voltageMv != 0;
 }
 
-namespace robotactions
-{
-    void setIntakeVoltages(int voltageMv)
-    {
-        leftIntake.move_voltage(voltageMv);
-        rightIntake.move_voltage(voltageMv);
+void setLeverVoltages(int voltageMv) {
+    // leftLever.move_voltage(voltageMv);
+    // rightLever.move_voltage(voltageMv);
 
-        // intake.move_voltage(voltageMv);
-        intakeRunning = voltageMv != 0;
-    }
+    lever.move_voltage(voltageMv);
 
-    void setLeverVoltages(int voltageMv)
-    {
-        // leftLever.move_voltage(voltageMv);
-        // rightLever.move_voltage(voltageMv);
+    leverRunning = voltageMv != 0;
+}
 
-        lever.move_voltage(voltageMv);
+void stopAllIntake() { setIntakeVoltages(0); }
 
-        leverRunning = voltageMv != 0;
-    }
+void stopLever() { setLeverVoltages(0); }
 
-    void stopAllIntake()
-    {
-        setIntakeVoltages(0);
-    }
+void spinAllIntake(int voltageMv) { setIntakeVoltages(voltageMv); }
 
-    void stopLever()
-    {
-        setLeverVoltages(0);
-    }
+void spinLever(int voltageMv) { setLeverVoltages(voltageMv); }
 
-    void spinAllIntake(int voltageMv)
-    {
-        setIntakeVoltages(voltageMv);
-    }
+void runIntakeIn() { spinAllIntake(kFullPowerMv); }
 
+void runOuttake() { spinAllIntake(-kFullPowerMv); }
 
-    void spinLever(int voltageMv)
-    {
-        setLeverVoltages(voltageMv);
-    }
+void runLowGoalScore() {
+    setIntakeLiftUp(true);
+    spinAllIntake(-kLowGoalMv);
+}
 
-    void runIntakeIn()
-    {
-        spinAllIntake(kFullPowerMv);
-    }
+void runLowGoalScoreFor(std::uint32_t durationMs) {
+    runLowGoalScore();
+    pros::delay(durationMs);
+    setIntakeLiftUp(false);
+    stopAllIntake();
+}
 
-    void runOuttake()
-    {
-        spinAllIntake(-kFullPowerMv);
-    }
+bool isAnyIntakeRunning() { return intakeRunning; }
 
-    void runLowGoalScore()
-    {
-        setIntakeLiftUp(true);
-        spinAllIntake(-kLowGoalMv);
-    }
+bool isLeverRunning() { return leverRunning; }
 
-    void runLowGoalScoreFor(std::uint32_t durationMs)
-    {
-        runLowGoalScore();
-        pros::delay(durationMs);
-        setIntakeLiftUp(false);
-        stopAllIntake();
-    }
+void setMatchLoaderDown(bool down) { matchLoader.set_value(down); }
 
-    bool isAnyIntakeRunning()
-    {
-        return intakeRunning;
-    }
+void setIntakeLiftUp(bool up) { intakeLift.set_value(up); }
 
-    bool isLeverRunning()
-    {
-        return leverRunning;
-    }
+void setWingFourBarUp(bool up) { wingFourBar.set_value(up); }
 
-    void setMatchLoaderDown(bool down)
-    {
-        matchLoader.set_value(down);
-    }
+void setWingUp(bool up) { wing.set_value(up); }
 
-    void setIntakeLiftUp(bool up)
-    {
-        intakeLift.set_value(up);
-    }
+void setMidGoalUp(bool up) { midGoal.set_value(up); }
 
-    void setWingFourBarUp(bool up)
-    {
-        wingFourBar.set_value(up);
-    }
+void setHoodUp(bool up) { hood.set_value(up); }
 
-    void setWingUp(bool up)
-    {
-        wing.set_value(up);
-    }
+void setLeverUp(bool up) { leverPiston.set_value(up); }
 
-    void setMidGoalUp(bool up)
-    {
-        midGoal.set_value(up);
-    }
+void setBasketUp(bool up) { basket.set_value(up); }
 
-    void setHoodUp(bool up)
-    {
-        hood.set_value(up);
-    }
-
-    void setLeverUp(bool up)
-    {
-        leverPiston.set_value(up);
-    }
-
-    void setBasketUp(bool up)
-    {
-        basket.set_value(up);
-    }
-
-} // namespace robotactions
+}  // namespace robotactions
