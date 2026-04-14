@@ -142,6 +142,8 @@ void runR1IntakeControl()
     if (master.get_digital(DIGITAL_R1) && !leverUp)
     {
         robotactions::spinAllIntake(robotactions::kFullPowerMv);
+    } else {
+        robotactions::spinAllIntake((-robotactions::kFullPowerMv/2));
     }
 }
 
