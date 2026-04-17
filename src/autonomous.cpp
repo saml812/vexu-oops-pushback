@@ -78,13 +78,20 @@ void autonRight() {
 }
 }  // namespace
 
-void moveDistance(float distance, int timeout, lemlib::MoveToPointParams params,
-                  bool async) {
+void moveDistance(float distance, int timeout, lemlib::MoveToPointParams params, bool async) {
     // Convert heading to standard-position radians for correct trig.
     const lemlib::Pose pose = chassis.getPose(true, true);
     const float targetX = pose.x + (distance * std::cos(pose.theta));
     const float targetY = pose.y + (distance * std::sin(pose.theta));
     chassis.moveToPoint(targetX, targetY, timeout, params, async);
+}
+
+void turnRelative(float angle, int timeout, lemlib::TurnToHeadingParams params, bool async = false) {
+    lemlib::Pose pose = chassis.getPose();
+    float newHeading = pose.theta + angle;
+    newHeading = fmod(newHeading, 360.0);
+    if (newHeading < 0) newHeading += 360.0;
+    chassis.turnToHeading(newHeading, timeout, params, async);
 }
 
 const char* autonRoutineName(AutonRoutine routine) {

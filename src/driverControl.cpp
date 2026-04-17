@@ -3,6 +3,7 @@
 #include <array>
 #include <cstdint>
 
+#include "autonomous.h"
 #include "configure.h"
 #include "dashboard.h"
 #include "robotActions.h"
@@ -12,6 +13,10 @@ constexpr std::uint32_t TOP_ROLLER_REVERSAL_MS = 125;
 
 constexpr std::uint32_t DEFAULT_DEBOUNCE_MS = 120;
 constexpr std::uint32_t TOGGLE_DEBOUNCE_MS = 220;
+
+constexpr double MAX_ANGLE = 112.0;
+constexpr double MIN_ANGLE = 0.0;
+constexpr double TOLERANCE = 3.0;
 
 bool matchLoaderDown = false;
 bool intakeLiftUp = false;
@@ -27,11 +32,7 @@ bool basketUp = false;
 bool leverPistonUp = false;
 bool leverArmDown = false;
 
-bool leverReturningDown = false;
-bool lastL1State = false;
-constexpr double LEVER_DOWN_POSITION_THRESHOLD = 5.0;  // degrees
-
-bool controllerVibrating = false;
+bool controllerVibrate = false;
 
 std::array<std::uint32_t, 32> lastButtonPressTimeMs = {0};
 
@@ -140,55 +141,66 @@ void runR1IntakeControl() {
 }
 
 void runL1LeverControl() {
-    bool currentL1State = master.get_digital(DIGITAL_L1);
+    enum LeverState { IDLE,
+                      MOVING_UP,
+                      MOVING_DOWN };
+    static LeverState state = IDLE;
 
-    if (currentL1State && controllerVibrating) {
-        robotactions::setLeverPistonUp(true);
-        leverPistonUp = true;
-        controllerVibrating = false;
-    }
-
-    // if ((currentL1State && basketUp)) {
-    //     robotactions::setLeverPistonUp(true);
-    //     leverPistonUp = true;
-    // } else {
-    //     robotactions::setLeverPistonUp(false);
-    //     leverPistonUp = false;
-    // }
-
-    // int leverPower = 0;
-    int leverPower = robotactions::kFullPowerMv;
+    int power = robotactions::kFullPowerMv;
     if (basketUp) {
-        leverPower = robotactions::kFullPowerMv;
+        power = robotactions::kFullPowerMv;
     } else {
-        leverPower = robotactions::kFullPowerMv / 2;
+        power = robotactions::kFullPowerMv / 2;
     }
 
-    if (lastL1State && !currentL1State) {
-        leverReturningDown = true;
+    double currentAngle = lever.get_position();
+    if (currentAngle < 0) {
+        lever.set_zero_position(0.0);
+        currentAngle = 0.0;
     }
-    lastL1State = currentL1State;
 
-    double pos = lever.get_position();
+    bool l1Pressed = master.get_digital(DIGITAL_L1);
 
-    if (currentL1State) {
-        leverReturningDown = false;
-        robotactions::spinLever(leverPower);
-    } else if (leverReturningDown) {
-        if (pos <= 0) {
-            lever.set_zero_position(0.0);
-            pos = 0.0;
-        }
-
-        if (pos > LEVER_DOWN_POSITION_THRESHOLD) {
-            pros::delay(100);
-            robotactions::spinLever(-robotactions::kFullPowerMv);
-        } else {
-            robotactions::stopLever();
-            leverReturningDown = false;
-        }
-    } else {
+    if (l1Pressed && state == IDLE) {
+        state = MOVING_UP;
+    } else if (!l1Pressed && state == MOVING_UP) {
+        state = MOVING_DOWN;
+    } else if (l1Pressed && state == MOVING_DOWN) {
+        state = MOVING_UP;
+    } else if (!l1Pressed && state == IDLE) {
         robotactions::stopLever();
+        robotactions::setLeverPistonUp(false);
+    }
+
+    switch (state) {
+        case MOVING_UP:
+            if (currentAngle >= MAX_ANGLE - TOLERANCE) {
+                robotactions::stopLever();
+                state = IDLE;
+            } else {
+                robotactions::spinLever(power);
+            }
+            if (controllerVibrate) {
+                robotactions::setLeverPistonUp(true);
+            }
+            break;
+
+        case MOVING_DOWN:
+            if (currentAngle <= MIN_ANGLE + TOLERANCE) {
+                robotactions::stopLever();
+                state = IDLE;
+            } else {
+                robotactions::spinLever(-robotactions::kFullPowerMv);
+            }
+            robotactions::setLeverPistonUp(false);
+            controllerVibrate = false;
+            break;
+
+        default:
+            robotactions::stopLever();
+            state = IDLE;
+            robotactions::setLeverPistonUp(false);
+            break;
     }
 }
 
@@ -262,7 +274,17 @@ void runBasketControl() {
     }
 }
 
-void runWingAlignControl() { return; }
+void runWingAlignControl() {
+    moveDistance(10.0, 2000, {.forwards = true});
+
+    turnRelative(-15.0, 1000, {.forwards = false});
+
+    moveDistance(-10.0, 2000, {.forwards = false});
+
+    turnRelative(15.0, 1000, {.forwards = true});
+
+    moveDistance(-10.0, 2000, {.forwards = false});
+}
 
 void runDriverControl() {
     runInertialRecalibrationControl();
@@ -298,16 +320,9 @@ void runDriverControl() {
         downIntakeActive = false;
         runOuttakeControl();
     } else if (master.get_digital(DIGITAL_A)) {
-        // downIntakeActive = false;
-        // runLowGoalControl();
-        // Toggle
-        // Vibrate controller
-        // Next L1 press/hold 
-        // lever motors and pistons fire
-        // Else
-        // L1, lever motors
-        vibrateController("-.-.");
-
+        if (basketUp) {
+            vibrateController("-.-.");
+        }
     } else if (master.get_digital(DIGITAL_R1)) {
         downIntakeActive = false;
         runR1IntakeControl();
@@ -315,6 +330,8 @@ void runDriverControl() {
         runDownIntakeTimedControl();
     } else if (master.get_digital(DIGITAL_RIGHT)) {
         matchLoader.set_value(true);
+    } else if (master.get_digital(DIGITAL_B)) {
+        runWingAlignControl();
     } else {
         downIntakeActive = false;
     }
@@ -339,17 +356,16 @@ bool isBasketUp() { return basketUp; }
 bool isLeverPistonUp() { return leverPistonUp; }
 
 bool isLeverArmDown() {
-    return lever.get_position() <= LEVER_DOWN_POSITION_THRESHOLD;
+    return lever.get_position() <= MIN_ANGLE;
 }
 
 int getFullIntakeVoltage() { return robotactions::kFullPowerMv; }
 
 int getPartialOuttakeVoltage() { return -robotactions::kPartialOuttakeMv; }
 
-bool isControllerVibrating() { return controllerVibrating; }
+bool isControllerVibrating() { return controllerVibrate; }
 
 void vibrateController(const char* pattern) {
-    controllerVibrating = true;
+    controllerVibrate = true;
     master.rumble(pattern);
-    controllerVibrating = false;
 }
