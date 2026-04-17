@@ -24,16 +24,19 @@ std::uint32_t downIntakeStartMs = 0;
 bool intakeDriveCutActive = false;
 
 bool basketUp = false;
-bool leverUp = false;
+bool leverPistonUp = false;
+bool leverArmDown = false;
 
 bool leverReturningDown = false;
 bool lastL1State = false;
 constexpr double LEVER_DOWN_POSITION_THRESHOLD = 5.0;  // degrees
 
+bool controllerVibrating = false;
+
 std::array<std::uint32_t, 32> lastButtonPressTimeMs = {0};
 
-pros::v5::Motor& drivetrainPort6Motor() {
-    static pros::v5::Motor motor(6, pros::v5::MotorGears::blue,
+pros::v5::Motor& drivetrainPort12Motor() {
+    static pros::v5::Motor motor(12, pros::v5::MotorGears::blue,
                                  pros::v5::MotorUnits::deg);
     return motor;
 }
@@ -57,23 +60,23 @@ void applyMatchLoaderHold(bool held) {
 void applyIntakeDriveMotorCut() {
     const bool intakeRunning = robotactions::isAnyIntakeRunning();
     const bool leverRunning = robotactions::isLeverRunning();
-    auto& port6 = drivetrainPort6Motor();
+    auto& port12 = drivetrainPort12Motor();
     auto& port20 = drivetrainPort20Motor();
 
     if (intakeRunning) {
         if (!intakeDriveCutActive) {
-            port6.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+            port12.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
             port20.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
             intakeDriveCutActive = true;
         }
 
-        port6.move_voltage(0);
+        port12.move_voltage(0);
         port20.move_voltage(0);
         return;
     }
 
     if (intakeDriveCutActive) {
-        port6.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+        port12.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
         port20.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
         intakeDriveCutActive = false;
     }
@@ -129,35 +132,36 @@ void runWingHoldControl() {
 }
 
 void runR1IntakeControl() {
-    if (master.get_digital(DIGITAL_R1) && !leverUp) {
+    if (master.get_digital(DIGITAL_R1) && isLeverArmDown()) {
         robotactions::spinAllIntake(robotactions::kFullPowerMv);
     } else {
-        robotactions::spinAllIntake((-robotactions::kFullPowerMv / 2));
+        robotactions::spinAllIntake((-robotactions::kFullPowerMv));
     }
 }
 
 void runL1LeverControl() {
-    static bool lastL1State = false;
-    static bool leverReturningDown = false;
-    const double LEVER_DOWN_POSITION_THRESHOLD = 5.0;
-
     bool currentL1State = master.get_digital(DIGITAL_L1);
 
-    if (currentL1State && basketUp) {
-        robotactions::setLeverUp(true);
-        leverUp = true;
-    } else {
-        robotactions::setLeverUp(false);
-        leverUp = false;
+    if (currentL1State && controllerVibrating) {
+        robotactions::setLeverPistonUp(true);
+        leverPistonUp = true;
+        controllerVibrating = false;
     }
 
-    int leverPower = 0;
-    if (currentL1State) {
-        if (basketUp) {
-            leverPower = robotactions::kFullPowerMv;
-        } else {
-            leverPower = robotactions::kFullPowerMv / 2;
-        }
+    // if ((currentL1State && basketUp)) {
+    //     robotactions::setLeverPistonUp(true);
+    //     leverPistonUp = true;
+    // } else {
+    //     robotactions::setLeverPistonUp(false);
+    //     leverPistonUp = false;
+    // }
+
+    // int leverPower = 0;
+    int leverPower = robotactions::kFullPowerMv;
+    if (basketUp) {
+        leverPower = robotactions::kFullPowerMv;
+    } else {
+        leverPower = robotactions::kFullPowerMv / 2;
     }
 
     if (lastL1State && !currentL1State) {
@@ -165,11 +169,17 @@ void runL1LeverControl() {
     }
     lastL1State = currentL1State;
 
+    double pos = lever.get_position();
+
     if (currentL1State) {
         leverReturningDown = false;
         robotactions::spinLever(leverPower);
     } else if (leverReturningDown) {
-        double pos = lever.get_position();
+        if (pos <= 0) {
+            lever.set_zero_position(0.0);
+            pos = 0.0;
+        }
+
         if (pos > LEVER_DOWN_POSITION_THRESHOLD) {
             pros::delay(100);
             robotactions::spinLever(-robotactions::kFullPowerMv);
@@ -279,8 +289,8 @@ void runDriverControl() {
     basketUp = false;
     robotactions::setBasketUp(false);
 
-    leverUp = false;
-    robotactions::setLeverUp(false);
+    leverPistonUp = false;
+    robotactions::setLeverPistonUp(false);
 
     runL1LeverControl();
 
@@ -288,8 +298,16 @@ void runDriverControl() {
         downIntakeActive = false;
         runOuttakeControl();
     } else if (master.get_digital(DIGITAL_A)) {
-        downIntakeActive = false;
-        runLowGoalControl();
+        // downIntakeActive = false;
+        // runLowGoalControl();
+        // Toggle
+        // Vibrate controller
+        // Next L1 press/hold 
+        // lever motors and pistons fire
+        // Else
+        // L1, lever motors
+        vibrateController("-.-.");
+
     } else if (master.get_digital(DIGITAL_R1)) {
         downIntakeActive = false;
         runR1IntakeControl();
@@ -318,8 +336,20 @@ bool isHoodUp() { return hoodUp; }
 
 bool isBasketUp() { return basketUp; }
 
-bool isLeverUp() { return leverUp; }
+bool isLeverPistonUp() { return leverPistonUp; }
+
+bool isLeverArmDown() {
+    return lever.get_position() <= LEVER_DOWN_POSITION_THRESHOLD;
+}
 
 int getFullIntakeVoltage() { return robotactions::kFullPowerMv; }
 
 int getPartialOuttakeVoltage() { return -robotactions::kPartialOuttakeMv; }
+
+bool isControllerVibrating() { return controllerVibrating; }
+
+void vibrateController(const char* pattern) {
+    controllerVibrating = true;
+    master.rumble(pattern);
+    controllerVibrating = false;
+}

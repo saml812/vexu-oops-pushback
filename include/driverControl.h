@@ -27,6 +27,9 @@ bool isMidGoalUp();
 bool isHoodUp();
 bool isLeverUp();
 bool isBasketUp();
+bool isLeverArmDown();
+
+void vibrateController(const char* pattern);
 
 int getFullIntakeVoltage();
 int getPartialOuttakeVoltage();

@@ -32,7 +32,7 @@ void setWingFourBarUp(bool up);
 void setWingUp(bool up);
 void setMidGoalUp(bool up);
 void setHoodUp(bool up);
-void setLeverUp(bool up);
+void setLeverPistonUp(bool up);
 void setBasketUp(bool up);
 
 }  // namespace robotactions

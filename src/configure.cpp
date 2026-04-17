@@ -2,17 +2,17 @@
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-pros::v5::MotorGroup leftDrive({-16, 17, -18, 19, -20},
+pros::v5::MotorGroup leftDrive({-17, 19, -18, 16, -20},
                                pros::v5::MotorGears::blue,
                                pros::v5::MotorUnits::deg);
-pros::v5::MotorGroup rightDrive({11, -12, 13, -14, 15},
+pros::v5::MotorGroup rightDrive({11, -15, 13, -14, 12},
                                 pros::v5::MotorGears::blue,
                                 pros::v5::MotorUnits::deg);
 // 11-15
 
-pros::v5::Motor leftIntake(10, pros::v5::MotorGears::blue,
+pros::v5::Motor leftIntake(9, pros::v5::MotorGears::blue,
                            pros::v5::MotorUnits::deg);
-pros::v5::Motor rightIntake(-2, pros::v5::MotorGears::blue,
+pros::v5::Motor rightIntake(-3, pros::v5::MotorGears::blue,
                             pros::v5::MotorUnits::deg);
 // pros::v5::Motor leftLever(9, pros::v5::MotorGears::green,
 // pros::v5::MotorUnits::deg); pros::v5::Motor rightLever(-1,
@@ -20,10 +20,12 @@ pros::v5::Motor rightIntake(-2, pros::v5::MotorGears::blue,
 
 // pros::v5::MotorGroup intake({10, -2}, pros::v5::MotorGears::blue,
 // pros::v5::MotorUnits::deg);
-pros::v5::MotorGroup lever({9, -1}, pros::v5::MotorGears::green,
+pros::v5::MotorGroup lever({8, -2}, pros::v5::MotorGears::green,
                            pros::v5::MotorUnits::deg);
 
-pros::IMU inertial(8);
+pros::IMU inertial(10);
+
+pros::Distance distanceSensor(1);
 
 pros::adi::DigitalOut matchLoader('B');
 pros::adi::DigitalOut intakeLift('A');
@@ -31,8 +33,8 @@ pros::adi::DigitalOut wingFourBar('C');
 pros::adi::DigitalOut wing('D');
 pros::adi::DigitalOut midGoal('E');
 pros::adi::DigitalOut hood('F');
-pros::adi::DigitalOut basket('F');
-pros::adi::DigitalOut leverPiston('F');
+pros::adi::DigitalOut basket('Y');
+pros::adi::DigitalOut leverPiston('X');
 
 lemlib::Drivetrain drivetrain{&leftDrive, &rightDrive, 12.5, 3, 600, 2};
 
@@ -82,7 +84,9 @@ void initializeRobot() {
 
     // leftLever.tare_position();
     // rightLever.tare_position();
-    lever.tare_position();
+    lever.set_zero_position(0,0);
+    lever.set_zero_position(0,1);
+    lever.tare_position_all();
 
     matchLoader.set_value(false);
     intakeLift.set_value(false);

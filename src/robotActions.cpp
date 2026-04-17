@@ -67,7 +67,7 @@ void setMidGoalUp(bool up) { midGoal.set_value(up); }
 
 void setHoodUp(bool up) { hood.set_value(up); }
 
-void setLeverUp(bool up) { leverPiston.set_value(up); }
+void setLeverPistonUp(bool up) { leverPiston.set_value(up); }
 
 void setBasketUp(bool up) { basket.set_value(up); }
 
