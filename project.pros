@@ -424,8 +424,7 @@
       }
     },
     "upload_options": {
-      "description": "Test Code",
-      "slot": 4
+      "description": "Worlds"
     },
     "use_early_access": false
   }

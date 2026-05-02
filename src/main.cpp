@@ -5,24 +5,6 @@
 // https://ez-robotics.github.io/EZ-Template/
 /////
 
-// Chassis constructor
-ez::Drive chassis(
-    // These are your drive motors, the first motor is used for sensing!
-    drive_ports_left,   // Left Chassis Ports (negative port will reverse it!)
-    drive_ports_right,  // Right Chassis Ports (negative port will reverse it!)
-
-    imu_port,    // IMU Port
-    wheel_dia,   // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
-    wheel_rpm);  // Wheel RPM = cartridge * (motor gear / wheel gear)
-
-// Uncomment the trackers you're using here!
-// - `8` and `9` are smart ports (making these negative will reverse the sensor)
-//  - you should get positive values on the encoders going FORWARD and RIGHT
-// - `2.75` is the wheel diameter
-// - `4.0` is the distance from the center of the wheel to the center of the robot
-// ez::tracking_wheel horiz_tracker(8, 2.75, 4.0);  // This tracking wheel is perpendicular to the drive wheels
-// ez::tracking_wheel vert_tracker(9, 2.75, 4.0);   // This tracking wheel is parallel to the drive wheels
-
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -45,9 +27,9 @@ void initialize() {
   // chassis.odom_tracker_left_set(&vert_tracker);
 
   // Configure your chassis controls
-  chassis.opcontrol_curve_buttons_toggle(curve_buttons_toggle);                                    // Enables modifying the controller curve with buttons on the joysticks
-  chassis.opcontrol_drive_activebrake_set(active_brake_constant);                                  // Sets the active brake kP. We recommend ~2.  0 will disable.
-  chassis.opcontrol_curve_default_set(drive_curve_constants.first, drive_curve_constants.second);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
+  chassis.opcontrol_curve_buttons_toggle(false);  // Enables modifying the controller curve with buttons on the joysticks
+  chassis.opcontrol_drive_activebrake_set(0);     // Sets the active brake kP. We recommend ~2.  0 will disable.
+  chassis.opcontrol_curve_default_set(2.1, 4.3);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
   // Set the drive to your own constants from autons.cpp!
   default_constants();
@@ -58,15 +40,17 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Red Top", red_top},
-      {"Red Bot", red_bot},
-      {"Blue Top", blue_top},
-      {"Blue Bot", blue_bot},
-      {"Skills Top", skills_top},
-      {"Skills Bot", skills_bot},
-      {"Move PID", drive_example},
-      {"Turn PID", turn_example},
+      {"Auton\n\nRight2", autonRight2},
+      {"Auton\n\nRight3", autonRight3},
+      {"Auton\n\nRight1", autonRight1},
+      {"Skills\n\nRight", skillsRight},
+      {"Auton\n\nRight", autonRight},
+      {"Drive\n\nDrive forward and come back", drive_example},
+      {"Turn\n\nTurn 3 times.", turn_example},
+      {"Measure Offsets\n\nThis will turn the robot a bunch of times and calculate your offsets for your tracking wheels.", measure_offsets},
   });
+
+  initializeRobot();
 
   // Initialize chassis and auton selector
   chassis.initialize();
@@ -233,47 +217,37 @@ void ez_template_extras() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() {
-  // Serial communication
-  //   pros::Serial serial(1, 115200);  // Serial(port, baudrate)
-  //   serial.flush();
-  //   uint8_t tx_buffer[] = "testing 123\n";
-  //   uint8_t rx_buffer[32];
-  //   int32_t bytes_read;
 
+/**
+   *R1 intake
+   *R2 outtake
+   L1 lever - 100percent if basket up
+       - 50percent if basket down
+   L2 wing - hold
+   A - Button for lever piston and vibration
+     - run 100% with the piston change power
+   *B - Toggle for 100% speed to override L1 default
+   X - Match loader - hold
+   Y - intake lift - toggle
+   Up - Basket toggle
+   Hood automatic
+   Right - Wing allign
+ */
+void opcontrol() {
   // This is preference to what you like to drive on
-  chassis.drive_brake_set(MOTOR_BRAKE_COAST);
+  chassis.drive_brake_set(MOTOR_BRAKE_BRAKE);
 
   while (true) {
     // Gives you some extras to make EZ-Template ezier
-    ez_template_extras();
+    // ez_template_extras();
 
-    // Serial Test
-    // read test
-    // if (serial.get_read_avail() > 0) {
-    //   bytes_read = serial.read(rx_buffer, sizeof(rx_buffer));
-    //   if (bytes_read > 0) {
-    //     std::cout << bytes_read << std::endl;
-    //   }
-    // }
+    int leftY = master.get_analog(ANALOG_LEFT_Y);
+    int rightX = master.get_analog(ANALOG_RIGHT_X);
 
-    // // write test
-    // serial.write(tx_buffer, sizeof(tx_buffer) - 1);
+    // lemlib::arcade(leftY, rightX, false);
+    chassis.opcontrol_arcade_standard(ez::SPLIT);
 
-    // pros::delay(1000);
-
-    // chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
-    split_arcade_drive(1.4);
-
-    main_controls();
-
-    // pros::lcd::print(0, "Motor values");
-    // pros::lcd::print(1, "L1:%f R1:%f DIFF:%f", chassis.left_motors[0].get_power(), chassis.right_motors[0].get_power(), chassis.left_motors[0].get_power() - chassis.right_motors[0].get_power());
-    // pros::lcd::print(2, "L2:%f R2:%f DIFF:%f", chassis.left_motors[1].get_power(), chassis.right_motors[1].get_power(), chassis.left_motors[1].get_power() - chassis.right_motors[1].get_power());
-    // pros::lcd::print(3, "L3:%f R3:%f DIFF:%f", chassis.left_motors[2].get_power(), chassis.right_motors[2].get_power(), chassis.left_motors[2].get_power() - chassis.right_motors[2].get_power());
-    // pros::lcd::print(4, "L4:%f R4:%f DIFF:%f", chassis.left_motors[3].get_power(), chassis.right_motors[3].get_power(), chassis.left_motors[3].get_power() - chassis.right_motors[3].get_power());
-    // pros::lcd::print(5, "L5:%f R5:%f DIFF:%f", chassis.left_motors[4].get_power(), chassis.right_motors[4].get_power(), chassis.left_motors[4].get_power() - chassis.right_motors[4].get_power());
-
+    runDriverControl();
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }

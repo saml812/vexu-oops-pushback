@@ -4,13 +4,11 @@ void default_constants();
 
 void drive_example();
 void turn_example();
-void combining_movements();
 void interfered_example();
+void measure_offsets();
 
-// custom autos
-void red_top();
-void red_bot();
-void blue_top();
-void blue_bot();
-void skills_top();
-void skills_bot();
+void skillsRight();
+void autonRight();
+void autonRight1();
+void autonRight2();
+void autonRight3();

@@ -42,12 +42,16 @@
 //#include "okapi/api.hpp"
 //#include "pros/api_legacy.h"
 #include "EZ-Template/api.hpp"
-#include "pros/serial.hpp"
 
 // More includes here...
+#include "lemlib/driveCurve.h"
+#include "lemlib/util.hpp"
+#include "lemlib/opcontrol.h"
+
+#include "configure.h"
 #include "autons.hpp"
-#include "subsystems.hpp"
-#include "config.hpp"
+#include "driverControl.h"
+#include "robotActions.h"
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
